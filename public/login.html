@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LearnHub</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="logo-section">
+            <div class="logo-icon">📚</div>
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Sign in to continue your learning journey</p>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <div class="input-icon"></div>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="input-icon"></div>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" class="submit" id="loginBtn">Sign In</button>
+        </form>
+        
+        <div class="links-section">
+            <a class="fg" href="forgot-password.html">Forgot Password?</a>
+            
+            <div class="divider">
+                <span>or</span>
+            </div>
+            
+            <p class="signup-link">Don't have an account? <a href="signup.html">Create Account</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const errorMessage = document.getElementById("error-message");
+            const loginBtn = document.getElementById("loginBtn");
+            const originalBtnText = loginBtn.textContent;
+            
+            // Hide previous error messages
+            errorMessage.style.display = "none";
+            
+            // Add loading state
+            loginBtn.textContent = "Signing In...";
+            loginBtn.disabled = true;
+            loginBtn.classList.add('loading-state');
+            
+            try {
+                console.log("Sending login request:", { email, password });
+                const response = await fetch("http://localhost:5000/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                    credentials: "include" // Include cookies
+                });
+
+                console.log("Response:", response);
+
+                const data = await response.json();
+                console.log("Data:", data);
+
+                if (!response.ok) {
+                    errorMessage.textContent = data.message;
+                    errorMessage.style.display = "block";
+                    return;
+                }
+                
+                // Success - redirect based on role
+                if (data.user && data.user.role === "admin") {
+                    window.location.href = "admin-home.html";
+                } else {
+                    window.location.href = "home.html";
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                errorMessage.textContent = "Server error. Try again later.";
+                errorMessage.style.display = "block";
+            } finally {
+                // Remove loading state
+                loginBtn.textContent = originalBtnText;
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('loading-state');
+            }
+        });
+
+        // Add smooth focus animations
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
+</body>
+</html>

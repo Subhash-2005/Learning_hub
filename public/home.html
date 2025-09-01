@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - LearnHub</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="images/log.jpeg" alt="LearnHub logo">
+                <span class="logo-text">LearnHub</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="courses.html">My Courses</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="#" id="logoutBtn">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="welcome-section">
+            <h1>Welcome back, <span id="username">Guest</span>!</h1>
+            <p>Ready to continue your learning journey today?</p>
+        </section>
+
+        <section id="dashboard" class="user-dashboard">
+            <h2>Your Learning Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>📚 Enrolled Courses</h3>
+                    <p>You are currently enrolled in <strong id="enrolledCount">0</strong> courses.</p>
+                    <a href="courses.html">View All Courses</a>
+                </div>
+                <div class="dashboard-card">
+                    <h3>📊 Overall Progress</h3>
+                    <div class="progress-container">
+                        <svg class="progress-circle" width="120" height="120">
+                            <defs>
+                                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#6366f1"/>
+                                    <stop offset="100%" style="stop-color:#10b981"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="60" cy="60" r="50" stroke="rgba(99, 102, 241, 0.2)" stroke-width="10" fill="none"></circle>
+                            <circle id="progressCircle" cx="60" cy="60" r="50" stroke="url(#progressGradient)" stroke-width="10" fill="none" stroke-dasharray="314.2" stroke-dashoffset="314.2" stroke-linecap="round"></circle>
+                        </svg>
+                        <p id="progressText">0%</p>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <h3>🌟 Featured Course</h3>
+                    <p id="featuredCourse">Loading...</p>
+                    <a href="#" id="startCourseBtn">Continue Learning</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="section leaderboard">
+            <h2>🏆 Top Learners</h2>
+            <ul id="topLearners">
+                <li>🏆 Loading leaderboard...</li>
+            </ul>
+        </div>
+
+        <div class="section announcements">
+            <h2>📅 Upcoming Live Sessions</h2>
+            <ul>
+                <li>🎓 Web Development Q&A - March 15th</li>
+                <li>🚀 AI & Data Science - March 20th</li>
+                <li>🔒 Cybersecurity Webinar - March 25th</li>
+            </ul>
+        </div>
+
+        <div class="section recommended-courses">
+            <h2>💡 Recommended for You</h2>
+            <div class="courses-grid" id="recommendedCourses">
+                <div class="course-card">
+                    <div class="loading"></div>
+                    <p>Loading personalized recommendations...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="featuredCourses"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 LearnHub. Empowering learners worldwide.</p>
+    </footer>
+
+    <script>
+        async function fetchUserData() {
+            try {
+                const response = await fetch("http://localhost:5000/profile", {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert("Session expired. Please login again.");
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                document.getElementById("username").textContent = data.name;
+                document.getElementById("enrolledCount").textContent = data.enrolledCourses.length;
+
+                // ✅ Calculate and update progress
+                const totalProgress = data.enrolledCourses.reduce((sum, course) => sum + course.progress, 0);
+                const avgProgress = data.enrolledCourses.length > 0 ? totalProgress / data.enrolledCourses.length : 0;
+                document.getElementById("progressText").textContent = `${Math.round(avgProgress)}%`;
+
+                // ✅ Animate Progress Bar
+                const progressCircle = document.getElementById("progressCircle");
+                const offset = 314.2 - (314.2 * avgProgress) / 100;
+                setTimeout(() => {
+                    progressCircle.style.strokeDashoffset = offset;
+                }, 500);
+
+                // ✅ Select a random featured course
+                if (data.enrolledCourses.length > 0) {
+                    const randomCourse = data.enrolledCourses[Math.floor(Math.random() * data.enrolledCourses.length)];
+                    document.getElementById("featuredCourse").textContent = randomCourse.courseName;
+                    document.getElementById("startCourseBtn").href = `course-details.html?course=${randomCourse.courseName}`;
+                } else {
+                    document.getElementById("featuredCourse").textContent = "No courses enrolled yet";
+                    document.getElementById("startCourseBtn").textContent = "Browse Courses";
+                    document.getElementById("startCourseBtn").href = "courses.html";
+                }
+
+                fetchRecommendedCourses();
+                fetchLeaderboard();
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        }
+
+        async function fetchRecommendedCourses() {
+            try {
+                const response = await fetch("http://localhost:5000/recommended-courses", {
+                    method: "GET",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert("Error: " + data.message);
+                    return;
+                }
+
+                const coursesContainer = document.getElementById("recommendedCourses");
+                if (data.recommendedCourses.length === 0) {
+                    coursesContainer.innerHTML = "<p>No new recommendations available at the moment.</p>";
+                } else {
+                    coursesContainer.innerHTML = data.recommendedCourses.map(course => `
+                        <div class="course-card">
+                            <h3>${course.name}</h3>
+                            <p>${course.description}</p>
+                            <button onclick="enrollCourse('${course.name}')">Enroll Now</button>
+                        </div>
+                    `).join("");
+                }
+            } catch (error) {
+                console.error("Error fetching recommended courses:", error);
+                document.getElementById("recommendedCourses").innerHTML = "<p>Unable to load recommendations at this time.</p>";
+            }
+        }
+
+        async function fetchLeaderboard() {
+            // Simulate API call delay
+            setTimeout(() => {
+                const leaderboard = ["Alice Johnson - 95% Complete", "Bob Smith - 90% Complete", "Charlie Brown - 85% Complete", "Diana Prince - 82% Complete", "Eve Wilson - 78% Complete"];
+                document.getElementById("topLearners").innerHTML = leaderboard.map((user, index) => {
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏆';
+                    return `<li>${medal} ${user}</li>`;
+                }).join("");
+            }, 1000);
+        }
+
+        async function enrollCourse(courseName) {
+            try {
+                const response = await fetch("http://localhost:5000/enroll", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ courseName }),
+                    credentials: "include"
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert("Error: " + data.message);
+                    return;
+                }
+
+                alert("🎉 You have successfully enrolled in " + courseName + "!");
+                fetchUserData();
+            } catch (error) {
+                console.error("Enrollment Error:", error);
+                alert("Failed to enroll. Please try again.");
+            }
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", async function (e) {
+            e.preventDefault();
+            
+            if (confirm("Are you sure you want to logout?")) {
+                await fetch("http://localhost:5000/logout", {
+                    method: "POST",
+                    credentials: "include"
+                });
+
+                localStorage.clear();
+                alert("Logged out successfully!");
+                window.location.href = "login.html";
+            }
+        });
+
+        // ✅ Load user data when the page loads
+        document.addEventListener("DOMContentLoaded", fetchUserData);
+
+
+
+    </script>
+</body>
+</html>

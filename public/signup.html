@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - LearnHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="header-section">
+            <div class="logo-icon">🚀</div>
+            <h1>Join LearnHub</h1>
+            <p class="subtitle">Start your learning journey today</p>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        
+        <form id="signupForm">
+            <div class="form-group">
+                <div class="input-icon"></div>
+                <input type="text" id="name" placeholder="Full Name" required>
+            </div>
+            
+            <div class="form-group">
+                <div class="input-icon"></div>
+                <input type="email" id="email" placeholder="Email Address" required>
+            </div>
+            
+            <div class="form-group">
+                <div class="input-icon"></div>
+                <input type="password" id="password" placeholder="Create Password" required>
+                <div class="strength-meter">
+                    <div class="strength-fill" id="strengthFill"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="input-icon"></div>
+                <select id="securityQuestion" required>
+                    <option value="" disabled selected>Choose a security question</option>
+                    <option value="What is your favorite color?">What is your favorite color?</option>
+                    <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                    <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                    <option value="What is your favorite food?">What is your favorite food?</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <div class="input-icon"></div>
+                <input type="text" id="securityAnswer" placeholder="Your answer" required>
+            </div>
+
+            <button type="submit" class="up" id="signupBtn">Create Account</button>
+        </form>
+
+        <p class="login-link">Already have an account? <a href="login.html">Sign In</a></p>
+        
+        <div class="divider">
+            <span>or</span>
+        </div>
+        
+        <a href="https://google.com">
+            <button class="goo">Continue with Google</button>
+        </a>
+    </div>
+
+    <script>
+        // Password strength indicator
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthFill = document.getElementById('strengthFill');
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 25;
+            if (password.match(/[a-z]/)) strength += 25;
+            if (password.match(/[A-Z]/)) strength += 25;
+            if (password.match(/[0-9]/) || password.match(/[^a-zA-Z0-9]/)) strength += 25;
+            
+            strengthFill.style.width = strength + '%';
+        });
+
+        // Add focus animations
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            element.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+
+        document.getElementById("signupForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const securityQuestion = document.getElementById("securityQuestion").value;
+            const securityAnswer = document.getElementById("securityAnswer").value.trim();
+            const errorMessage = document.getElementById('error-message');
+            const signupBtn = document.getElementById('signupBtn');
+            const originalBtnText = signupBtn.textContent;
+
+            errorMessage.style.display = "none";
+            errorMessage.textContent = '';
+            
+            // Add loading state
+            signupBtn.textContent = "Creating Account...";
+            signupBtn.disabled = true;
+            signupBtn.classList.add('loading-state');
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                errorMessage.textContent = "Please enter a valid email address.";
+                errorMessage.style.display = "block";
+                resetButton();
+                return false;
+            }
+            
+            if (password.length < 8) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = "Password must be at least 8 characters long.";
+                resetButton();
+                return false;
+            }
+            
+            if (!securityQuestion) {
+                errorMessage.textContent = "Please select a security question.";
+                errorMessage.style.display = "block";
+                resetButton();
+                return false;
+            }
+
+            if (securityAnswer.length < 3) {
+                errorMessage.textContent = "Security answer must be at least 3 characters long.";
+                errorMessage.style.display = "block";
+                resetButton();
+                return false;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5000/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, password, securityQuestion, securityAnswer })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    errorMessage.textContent = data.message;
+                    errorMessage.style.display = "block";
+                    resetButton();
+                    return false;
+                }
+
+                // Success animation
+                signupBtn.textContent = "Account Created! ✓";
+                signupBtn.style.background = "linear-gradient(135deg, #48bb78, #38a169)";
+                
+                setTimeout(() => {
+                    alert("Signup successful! Please log in.");
+                    window.location.href = "login.html";
+                }, 1000);
+                
+            } catch (error) {
+                errorMessage.textContent = "Server error. Try again later.";
+                errorMessage.style.display = "block";
+                resetButton();
+            }
+
+            function resetButton() {
+                signupBtn.textContent = originalBtnText;
+                signupBtn.disabled = false;
+                signupBtn.classList.remove('loading-state');
+            }
+        });
+    </script>
+</body>
+</html>

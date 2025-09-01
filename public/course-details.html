@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details - LearnHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        nav a:hover::before {
+            left: 100%;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .course-details {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .course-details::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        #course-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        #course-description {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .learning-section {
+            margin: 2rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .learning-section h3 {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        #course-learning {
+            list-style: none;
+            padding: 0;
+        }
+
+        #course-learning li {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            margin: 0.5rem 0;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #course-learning li::before {
+            content: '✓';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        #course-learning li {
+            padding-left: 3rem;
+        }
+
+        #course-learning li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .progress-section {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-section h3 {
+            font-size: 1.2rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        #course-progress {
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            background: #e2e8f0;
+            overflow: hidden;
+            appearance: none;
+            margin-bottom: 1rem;
+        }
+
+        #course-progress::-webkit-progress-bar {
+            background: #e2e8f0;
+            border-radius: 6px;
+        }
+
+        #course-progress::-webkit-progress-value {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        #course-progress::-moz-progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 6px;
+        }
+
+        #progress-text {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #enrollBtn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        #continueBtn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            box-shadow: 0 10px 30px rgba(72, 187, 120, 0.3);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .loading-state {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading-state::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            margin: -25px 0 0 -25px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            nav a {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .course-details {
+                padding: 2rem;
+            }
+            
+            #course-title {
+                font-size: 2rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="images/log.jpeg" alt="LearnHub Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="home.html">Dashboard</a></li>
+                <li><a href="courses.html">My Courses</a></li>
+               <li><a href="profile.html">Profile</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        <section class="course-details">
+            <h2 id="course-title">Loading...</h2>
+            <p id="course-description">Fetching course details...</p>
+            
+            <div class="learning-section">
+                <h3>What You Will Learn:</h3>
+                <ul id="course-learning"></ul>
+            </div>
+            
+            <div class="progress-section">
+                <h3>Your Progress</h3>
+                <progress id="course-progress" value="0" max="100"></progress>
+                <p>Progress: <span id="progress-text">0%</span> completed</p>
+            </div>
+            
+            <div class="button-container">
+                <button id="enrollBtn">Enroll in Course</button>
+                <button id="continueBtn" style="display: none;">Continue Learning</button>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 LearnHub. All Rights Reserved.</p>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const params = new URLSearchParams(window.location.search);
+            const courseName = params.get("course");
+            const enrollBtn = document.getElementById("enrollBtn");
+            const continueBtn = document.getElementById("continueBtn");
+            const courseProgress = document.getElementById("course-progress");
+            const progressText = document.getElementById("progress-text");
+
+            if (!courseName) {
+                document.getElementById("course-title").textContent = "Course Not Found";
+                document.getElementById("course-description").textContent = "Please select a valid course.";
+                enrollBtn.style.display = "none";
+                continueBtn.style.display = "none";
+                return;
+            }
+
+            // Add loading state
+            const courseDetails = document.querySelector('.course-details');
+            courseDetails.classList.add('loading-state');
+
+            try {
+                // Fetch course details
+                const response = await fetch(`http://localhost:5000/course-details?name=${encodeURIComponent(courseName)}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    document.getElementById("course-title").textContent = "Course Not Found";
+                    document.getElementById("course-description").textContent = data.message || "Course not found.";
+                    enrollBtn.style.display = "none";
+                    continueBtn.style.display = "none";
+                    return;
+                }
+
+                document.getElementById("course-title").textContent = data.title;
+                document.getElementById("course-description").textContent = data.description;
+                document.getElementById("course-learning").innerHTML = data.learning.map(item => `<li>${item}</li>`).join("");
+
+                // Fetch user profile to check enrollment and progress
+                const profileRes = await fetch("http://localhost:5000/profile", {
+                    method: "GET",
+                    credentials: "include"
+                });
+                const profileData = await profileRes.json();
+
+                if (profileRes.ok && profileData.enrolledCourses) {
+                    const enrolled = profileData.enrolledCourses.find(c => c.courseName === data.title);
+                    if (enrolled) {
+                        // Already enrolled
+                        enrollBtn.style.display = "none";
+                        continueBtn.style.display = "inline-block";
+                        courseProgress.value = enrolled.progress;
+                        progressText.textContent = `${enrolled.progress}%`;
+                    } else {
+                        // Not enrolled
+                        enrollBtn.style.display = "inline-block";
+                        continueBtn.style.display = "none";
+                        courseProgress.value = 0;
+                        progressText.textContent = "0%";
+                    }
+                }
+            } catch (error) {
+                document.getElementById("course-title").textContent = "Error";
+                document.getElementById("course-description").textContent = "Failed to load course details.";
+            } finally {
+                courseDetails.classList.remove('loading-state');
+            }
+        });
+
+        document.getElementById("enrollBtn").addEventListener("click", async function () {
+            const courseName = document.getElementById("course-title").textContent;
+            const button = this;
+            const originalText = button.textContent;
+            
+            // Add loading state to button
+            button.textContent = "Enrolling...";
+            button.style.opacity = "0.7";
+            button.disabled = true;
+            
+            try {
+                const response = await fetch("http://localhost:5000/enroll", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ courseName }),
+                    credentials: "include"
+                });
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message);
+                }
+                
+                alert("Successfully enrolled in " + courseName);
+                document.getElementById("enrollBtn").style.display = "none";
+                document.getElementById("continueBtn").style.display = "inline-block";
+                updateProgress(0); 
+                
+            } catch (error) {
+                alert("Enrollment failed: " + error.message);
+                button.textContent = originalText;
+                button.style.opacity = "1";
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById("continueBtn").addEventListener("click", function () {
+            const courseName = document.getElementById("course-title").textContent;
+            window.location.href = `course-content.html?course=${encodeURIComponent(courseName)}`;
+        });
+
+        function updateProgress(progress) {
+            document.getElementById("course-progress").value = progress;
+            document.getElementById("progress-text").textContent = progress + "%";
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", async function () {
+            await fetch("http://localhost:5000/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+            localStorage.clear();
+            alert("Logged out successfully!");
+            window.location.href = "login.html";
+        });
+    </script>
+</body>
+</html>
