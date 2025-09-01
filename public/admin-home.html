@@ -590,7 +590,7 @@
                 const coursesList = document.getElementById("coursesList");
                 coursesList.innerHTML = '<div class="loading"></div>';
                 
-                const res = await fetch("http://localhost:5000/admin/courses", { credentials: "include" });
+                const res = await fetch("https://learning-hub-oowi.onrender.com/admin/courses", { credentials: "include" });
                 const courses = await res.json();
                 
                 if (courses.length === 0) {
@@ -650,7 +650,7 @@
                 const videos = document.getElementById("courseVideos").value
                     ? document.getElementById("courseVideos").value.split(",").map(v => v.trim())
                     : [];
-                const response = await fetch("http://localhost:5000/admin/course", {
+                const response = await fetch("https://learning-hub-oowi.onrender.com/admin/course", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",
@@ -675,7 +675,7 @@
         async function deleteCourse(id) {
             if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
                 try {
-                    const response = await fetch(`http://localhost:5000/admin/course/${id}`, {
+                    const response = await fetch(`https://learning-hub-oowi.onrender.com/admin/course/${id}`, {
                         method: "DELETE",
                         credentials: "include"
                     });
@@ -699,7 +699,7 @@
 
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                fetch("http://localhost:5000/logout", { method: "POST", credentials: "include" })
+                fetch("https://learning-hub-oowi.onrender.com/logout", { method: "POST", credentials: "include" })
                     .then(() => {
                         window.location.href = "login.html";
                     })

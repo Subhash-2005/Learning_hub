@@ -98,7 +98,7 @@
     <script>
         async function fetchUserData() {
             try {
-                const response = await fetch("http://localhost:5000/profile", {
+                const response = await fetch("https://learning-hub-oowi.onrender.com/profile", {
                     method: "GET",
                     credentials: "include"
                 });
@@ -146,7 +146,7 @@
 
         async function fetchRecommendedCourses() {
             try {
-                const response = await fetch("http://localhost:5000/recommended-courses", {
+                const response = await fetch("https://learning-hub-oowi.onrender.com/recommended-courses", {
                     method: "GET",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" }
@@ -190,7 +190,7 @@
 
         async function enrollCourse(courseName) {
             try {
-                const response = await fetch("http://localhost:5000/enroll", {
+                const response = await fetch("https://learning-hub-oowi.onrender.com/enroll", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ courseName }),
@@ -216,7 +216,7 @@
             e.preventDefault();
             
             if (confirm("Are you sure you want to logout?")) {
-                await fetch("http://localhost:5000/logout", {
+                await fetch("https://learning-hub-oowi.onrender.com/logout", {
                     method: "POST",
                     credentials: "include"
                 });

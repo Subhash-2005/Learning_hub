@@ -592,7 +592,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", async function () {
             try {
-                const response = await fetch("http://localhost:5000/profile", {
+                const response = await fetch("https://learning-hub-oowi.onrender.com/profile", {
                     method: "GET",
                     credentials: "include"
                 });
@@ -682,7 +682,7 @@
             
             if (confirm("Are you sure you want to logout?")) {
                 try {
-                    await fetch("http://localhost:5000/logout", {
+                    await fetch("https://learning-hub-oowi.onrender.com/logout", {
                         method: "POST",
                         credentials: "include"
                     });
