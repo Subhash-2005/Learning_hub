@@ -9,7 +9,7 @@ const path = require("path");
 const PDFDocument = require('pdfkit'); // npm install pdfkit
 const app = express();
 app.use(cors({
-    origin: "http://localhost:5500",
+    origin: "https://learning-hub-oowi.onrender.com",
     credentials: true 
 }));
 app.use(express.json());
@@ -413,4 +413,4 @@ app.get("/certificate", verifyToken, async (req, res) => {
     }
 });
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on https://learning-hub-oowi.onrender.com:${PORT}`));
